@@ -1,3 +1,4 @@
-scrapy
+arrow
 hiredis
 redis
+scrapy

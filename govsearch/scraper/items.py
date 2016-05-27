@@ -3,12 +3,11 @@
 import scrapy
 
 
-class GovtDecisionItem(scrapy.Item):
-    id = scrapy.Field()
-    title = scrapy.Field()
+class ResolutionItem(scrapy.Item):
     url = scrapy.Field()
+    date = scrapy.Field()
+    resolution_number = scrapy.Field()
+    gov = scrapy.Field()
+    title = scrapy.Field()
     subject = scrapy.Field()
     body = scrapy.Field()
-    date = scrapy.Field()
-    number = scrapy.Field()
-    government = scrapy.Field()
