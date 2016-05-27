@@ -1,6 +1,7 @@
 from redis import Redis, RedisError, ConnectionPool
 import datetime
 import itertools
+import json
 
 class Item(object):
 
@@ -16,6 +17,17 @@ class Item(object):
         self.date = date
         self.number = number
         self.government = government
+
+    @staticmethod
+    def fromJSON(jstr):
+
+        obj = json.loads(jstr)
+        return Item(**obj)
+
+    def index(self, client):
+
+        client.add_document(doc_id=self.id, score=1.0, **self.__dict__)
+
 
 
 class Document(object):

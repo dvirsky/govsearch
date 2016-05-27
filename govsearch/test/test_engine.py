@@ -1,6 +1,7 @@
 from govsearch.engine import *
 import unittest
 
+
 class EngineTestCase(unittest.TestCase):
 
     def testEngine(self):
@@ -18,7 +19,7 @@ class EngineTestCase(unittest.TestCase):
         self.assertEqual(2, len(res.docs))
         print res.docs
 
-        res = client.search('hello', foo = ('-inf',1))
+        res = client.search('hello', foo = (0,1))
         self.assertEqual(1, res.total)
         self.assertEqual(1, len(res.docs))
 
