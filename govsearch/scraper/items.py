@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import scrapy
 
 
@@ -8,6 +10,5 @@ class GovtDecisionItem(scrapy.Item):
     subject = scrapy.Field()
     body = scrapy.Field()
     date = scrapy.Field()
-    year = scrapy.Field()
     number = scrapy.Field()
     government = scrapy.Field()
