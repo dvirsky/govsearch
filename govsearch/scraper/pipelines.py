@@ -4,6 +4,7 @@ import arrow
 import json
 import re
 
+
 class ResolutionError(RuntimeError):
     """Raised when crawling resulted in unexpected results
 
@@ -18,9 +19,9 @@ class ResolutionPipeline(object):
 
         # compile regular expressions:
 
-        # input looks like 'dec1495.aspx'
-        # we need the resolution number (1495)
-        self.resolution_number_pattern = re.compile(r"^\D+(?P<number>\d+?)\..*$")
+        # input looks like 'dec14R.aspx'
+        # we need the resolution number (14R)
+        self.resolution_number_pattern = re.compile(r"^\D+(?P<number>.+?)\..*$")
 
         # input looks like 'ממשלה/הממשלה ה - 34 בנימין נתניהו;'
         # we need the government number (34) and prime minister name (בנימין נתניהו)
@@ -79,14 +80,14 @@ class ResolutionPipeline(object):
     def get_title(self, item):
         if len(item["title"]) == 0:
             raise ResolutionError("Title fields is empty for item %s", item)
-        return ''.join(item["title"]).strip()
+        return '\n'.join(item["title"]).strip()
 
     def get_subject(self, item):
         if len(item["subject"]) == 0:
             raise ResolutionError("Subject field is empty for item %s", item)
-        return ''.join(item["subject"]).strip()
+        return '\n'.join(item["subject"]).strip()
 
     def get_body(self, item):
         if len(item["body"]) == 0:
             raise ResolutionError("Body field is empty for item %s", item)
-        return ''.join(item["body"]).strip()
+        return '\n'.join(item["body"]).strip()
