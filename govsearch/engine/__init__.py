@@ -58,7 +58,7 @@ class Document(object):
     def snippetize(self, field, size=500, boldTokens=[]):
         txt = getattr(self, field, '')
         for tok in boldTokens:
-            txt = txt.replace(tok, "&lt;b&gt;%s&lt;/b&gt;" % tok)
+            txt = txt.replace(tok, "<b>%s</b>" % tok)
         while size < len(txt) and txt[size] != ' ':
             size+=1
 

@@ -1,0 +1,41 @@
+* {
+    font-family: arial;
+}
+
+.result {
+width: 800px;
+  font-family: arial;
+    font-size: 14px !important;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+body {
+margin: 20px;
+}
+
+a {
+text-decoration: none !important;
+}
+.title {
+    font-size: 18px;
+    padding-bottom: 5px;
+
+}
+
+.stats {
+    font-size: 13px;
+}
+
+.description  {
+   font-size: 13px;
+   font-family: Arial, Tahoma, Sans;
+
+   padding: 0px 0px 4px 0px;
+}
+
+.url a {
+color: green !important;
+font-size: 11px;
+}

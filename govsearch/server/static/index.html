@@ -1,0 +1,49 @@
+<html dir="rtl">
+<head>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="search.css"/>
+</head>
+<body>
+<p>
+    <form target="_self" action="#" onsubmit="doSearch(); return false;">
+    <input id="query" placeholder="" style="width: 400px"/>
+    <input type="submit" value="חפש" />
+</form>
+
+    <div id="results">
+        results
+    </div>
+</p>
+<script>
+function doSearch(){
+
+    $.getJSON('/search?q=' + encodeURIComponent($('#query').val()),
+    function(jd) {
+
+        var str = "";
+        if (jd && jd.total > 0) {
+            str += "<p class='stats'>נמצאו " + jd.total + " תוצאות </p> ";
+        } else {
+            str += "לא נמצאו תוצאות";
+        }
+
+          for (x in jd.docs) {
+
+            try {
+                var doc = jd.docs[x];
+                str += "<div class='result'>";
+                str += "    <div class='title'>";
+                str += "        <a href=\"" + doc.url + "\">" + doc.title + "</a>";
+                str += "    </div>";
+                str += "    <div class='description'>" + doc.body + "</div>";
+                str += "    <div class='url'><a href=\"" + doc.url + "\">" + doc.url + "</a></div>";
+                str += "</div>"
+            } catch(e) {}
+
+          }
+          $("#results").html(str);
+    });
+}
+</script>
+</body>
+</html>
