@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from engine import SearchClient
 import unittest
 

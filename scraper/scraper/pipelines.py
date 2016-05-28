@@ -6,10 +6,11 @@ import re
 
 
 class ResolutionError(RuntimeError):
-    """Raised when crawling resulted in unexpected results
+    """Raised when crawling resulted in unexpected results.
 
     e.g. multiple titles, empty bodies, etc.
     """
+
     pass
 
 
@@ -39,8 +40,8 @@ class ResolutionPipeline(object):
                 'subject': self.get_subject(item),
                 'body': self.get_body(item),
             }
-        except ResolutionError as e:
-            dump = (json.dumps({'error': repr(e), 'url': item["url"]},
+        except ResolutionError as ex:
+            dump = (json.dumps({'error': repr(ex), 'url': item["url"]},
                                ensure_ascii=False)
                     .encode("utf8"))
         else:
