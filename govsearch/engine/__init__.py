@@ -2,7 +2,7 @@ from redis import Redis, RedisError, ConnectionPool
 import datetime
 import itertools
 import json
-
+import time
 
 class Item(object):
 
@@ -67,9 +67,10 @@ class Document(object):
 
 class Result(object):
 
-    def __init__(self, res, hascontent, queryText):
+    def __init__(self, res, hascontent, queryText, duration=0):
 
         self.total = res[0]
+        self.duration = duration
         self.docs = []
 
         tokens = filter(None, queryText.rstrip("\" ").lstrip(" \"").split(' '))
@@ -85,7 +86,7 @@ class Result(object):
             doc = Document(id, **fields)
             #print doc
             try:
-                doc.snippetize('body', size=250, boldTokens = tokens)
+                doc.snippetize('body', size=500, boldTokens = tokens)
             except Exception as e:
                 print e
             self.docs.append(doc)
@@ -147,7 +148,7 @@ class SearchClient(object):
         return Document(id=id, **fields)
 
 
-    def search(self, query, no_content=False, fields=None, **filters):
+    def search(self, query, offset =0, num = 10, no_content=False, fields=None, **filters):
         """
         Search eht
         :param query:
@@ -170,6 +171,9 @@ class SearchClient(object):
             for k, v in filters.iteritems():
                 args += ['FILTER', k] + list(v)
 
+        args += ["LIMIT", offset, num]
+
+        st = time.time()
         res = self.redis.execute_command(self.SEARCH_CMD, *args)
 
-        return Result(res, not no_content, queryText=query)
+        return Result(res, not no_content, queryText=query, duration = (time.time()-st)*1000.0)

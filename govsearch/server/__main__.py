@@ -27,6 +27,9 @@ def search():
     year_min = int(request.args.get('year_min', 0))
     year_max = int(request.args.get('year_max', 0))
     gov_num = int(request.args.get('gov_num', 0))
+    offset = int(request.args.get('offset', 0))
+    num = int(request.args.get('num', 10))
+
     filters = {}
     if year_max and year_min:
         dmin = arrow.get('%s' % year_min, 'YYYY').timestamp
@@ -38,7 +41,7 @@ def search():
     q = request.args.get('q', '').encode('utf-8')
     res = {}
     try:
-        res = _client.search(q, **filters)
+        res = _client.search(q, offset=offset, num=num, **filters)
     except Exception as e:
         pass
     return json.dumps(res, default=lambda o: o.__dict__, encoding='utf-8')
