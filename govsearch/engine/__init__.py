@@ -120,7 +120,6 @@ class SearchClient(object):
         :param fields: a kwargs consisting of field=[score|NUMERIC]
         :return:
         """
-        print fields.items()
         self.redis.execute_command(
             self.CREATE_CMD, self.index_name, *itertools.chain(*fields.items()))
 
