@@ -2,3 +2,5 @@ arrow
 hiredis
 redis
 scrapy
+click
+flask

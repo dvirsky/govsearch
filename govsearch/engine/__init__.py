@@ -6,18 +6,30 @@ import json
 
 class Item(object):
 
-    def __init__(self, title, url, subject, body, date, number, government):
+    def __init__(self, title, url, subject, body, date, resolution_number, gov_number, pm_name):
 
         dt = datetime.datetime.fromtimestamp(date)
 
-        self.id = '{}/{}'.format(dt.year, number)
+        self.id = '{}_{}'.format(dt.year, resolution_number)
         self.title = title
         self.url = url
         self.subject = subject
         self.body = body
         self.date = date
-        self.number = number
-        self.government = government
+        self.resolution_number = resolution_number
+        self.gov_number = gov_number
+        self.pm_name = pm_name
+
+
+
+
+    @staticmethod
+    def create_index(client):
+
+        client.create_index(title=10.0, url=1.0, subject=5.0, body=1.0, pm_name=5.0,
+                            gov_number=client.NUMERIC, date=client.NUMERIC,
+                            resolution_number=client.NUMERIC)
+
 
     @staticmethod
     def fromJSON(jstr):
@@ -43,17 +55,45 @@ class Document(object):
         return 'Document %s' % self.__dict__
 
 
+    def snippetize(self, field, size=500, boldTokens=[]):
+        txt = getattr(self, field, '')
+        for tok in boldTokens:
+            txt = txt.replace(tok, "&lt;b&gt;%s&lt;/b&gt;" % tok)
+        while size < len(txt) and txt[size] != ' ':
+            size+=1
+
+        setattr(self, field, (txt[:size] + '...') if len(txt) > size else txt)
+
+
 class Result(object):
 
-    def __init__(self, res, hascontent):
+    def __init__(self, res, hascontent, queryText):
 
         self.total = res[0]
         self.docs = []
+
+        tokens = filter(None, queryText.rstrip("\" ").lstrip(" \"").split(' '))
         for i in xrange(1, len(res), 2 if hascontent else 1):
             id = res[i]
             fields = dict(
                 dict(itertools.izip(res[i + 1][::2], res[i + 1][1::2]))) if hascontent else {}
-            self.docs.append(Document(id, **fields))
+            try:
+                del fields['id']
+            except KeyError:
+                pass
+
+            doc = Document(id, **fields)
+            #print doc
+            try:
+                doc.snippetize('body', size=250, boldTokens = tokens)
+            except Exception as e:
+                print e
+            self.docs.append(doc)
+
+
+    def __repr__(self):
+
+        return 'Result{%d total, docs: %s}' % (self.total, self.docs)
 
 
 class SearchClient(object):
@@ -94,8 +134,18 @@ class SearchClient(object):
 
         args = [self.ADD_CMD, self.index_name, doc_id, score,
                 'FIELDS'] + list(itertools.chain(*fields.items()))
-        self.redis.execute_command(*args
-                                   )
+        self.redis.execute_command(*args)
+
+    def load_document(self, id):
+
+        fields = self.redis.hgetall(id)
+        try:
+            del fields['id']
+        except KeyError:
+            pass
+
+        return Document(id=id, **fields)
+
 
     def search(self, query, no_content=False, fields=None, **filters):
         """
@@ -122,4 +172,4 @@ class SearchClient(object):
 
         res = self.redis.execute_command(self.SEARCH_CMD, *args)
 
-        return Result(res, not no_content)
+        return Result(res, not no_content, queryText=query)
